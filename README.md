@@ -38,6 +38,9 @@ Continent |String| Continent of Country.
 
 ## Helpful links
 http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2 
+
 http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels 
+
 http://www.sthda.com/english/articles/32-r-graphics-essentials/128-plot-time-series-data-using-ggplot/ 
+
 http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
