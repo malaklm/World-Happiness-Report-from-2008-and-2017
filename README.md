@@ -34,7 +34,7 @@ Continent |String| Continent of Country.
 
 
 ## Dataset
-http://worldhappiness.report/ed/2018/
+[World Happiness Report](http://worldhappiness.report/ed/2018/)
 
 ## Helpful links
 http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2 
