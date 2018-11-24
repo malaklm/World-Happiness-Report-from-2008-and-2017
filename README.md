@@ -6,9 +6,10 @@ The World Happiness Report is a landmark survey of the state of global happiness
 Factor | Type | Description
 ------ | ---- | -----------
 Country| String | Name of the Country.
+------ | ---- | -----------
+Score | Float | National AVG response to the questions: “Please imagine a ladder, with the worst possible life as a 0 and the best possible life as a 10. On which step of the ladder would you say you personally feel you stand at this time?”. This measure is also known as the Candrill Life Ladder.
+------ | ---- | -----------
 
-
-Country (String) : Name of the Country.
 
 Score (Float): National AVG response to the questions: “Please imagine a ladder, with the worst possible life as a 0 and the best possible life as a 10. On which step of the ladder would you say you personally feel you stand at this time?”. This measure is also known as the Candrill Life Ladder.
 
