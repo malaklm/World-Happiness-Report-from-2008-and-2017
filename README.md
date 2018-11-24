@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="header.png" width="800" height="800" />
+</p>
+
 # World Happiness Report from 2008 and 2017
 
 ## About the project
