@@ -1,0 +1,551 @@
+
+---
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+![](cover.jpg)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using in your analysis in this code
+# chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk. This
+# prevents the code from displaying in the knitted HTML output. You should set
+# echo=FALSE for all code chunks in your file, unless it makes sense for your
+# report to show the code that generated a particular plot.
+
+# The other parameters for "message" and "warning" should also be set to FALSE
+# for other code chunks once you have verified that each plot comes out as you
+# want it to. This will clean up the flow of your report.
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(ggcorrplot)
+```
+
+# World Happiness Report from 2008 and 2017
+## Malak Almohammadi
+
+### Introduction
+The World Happiness Report is a landmark survey of the state of global happiness. The World Happiness Report 2018, ranks 156 countries by their happiness levels. It is done by a group of independent experts using the data provided by the yearly Gallup World Poll.
+The happiness index is created by many major areas. I Select these majors in my analysis to study the effect of it in the happiness score.
+
+
+1) Country (String) : 
+Name of the Country.
+
+2) Score (Float):
+National AVG response to the questions: “Please imagine a ladder,  with the worst possible life as a 0 and the best possible life as a 10. On which step of the ladder would you say you personally feel you stand at this time?”. This measure is also known as the Candrill Life Ladder.
+
+3) GDP per Capita (Float):
+Natural log of GDP per Capita
+GDP : the total value of all the goods and services produced by a country in a particular year, divided by the number of people living there.
+
+4) Social Support (Float)
+National AVG of the responses to the GWP question “If you were in trouble, do you have relatives or friends you can count on to help you whenever you need them, or not?”
+
+5) Healthy Life Expectancy (Float)
+Life Expectancy AVG based on data by the WHO and the WDI
+Life Expectancy : The average number of years that a person can expect to live in "full health" by taking into account years lived in less than full health due to disease and/or injury. 
+
+6) Positive Affect (Float)
+AVG of three positive affect measures in GWP: happiness, laugh and enjoyment.
+
+7) Negative Affect (Float)
+AVG of three negative affect measures in GWP: worry, sadness and anger.
+
+8) Continent (String)
+Continent of Country. 
+
+Q1) How is the performance of the world happiness score over the years?
+
+Q2) What are the factors affect the happiness Score? 
+
+Q3) To what extend effect these factors on the happiness Score?
+
+Q4) How is the performance of happiness score in world continents over the years?
+
+Q5) How's the distribution of the most factor effect on happiness score over the world continents?
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+df = read.csv('~/resources/data/final_data.csv')
+```
+
+# Univariate Plots Section
+
+```{r echo=FALSE, Univariate_Plots}
+# This function creates a histogram for the factors
+Univariate_Plots_hist <- function(df,col,x_lab,y_lab,title,bin,color){
+  
+  p = ggplot(df, aes(x=col)) +
+    geom_histogram(binwidth = bin, color="black", fill=color) + 
+    xlab(x_lab) + 
+    ylab(y_lab) +
+    ggtitle(title)
+  
+  if(col == df$Score){
+    p  +xlim(0,10)
+  }
+  else if (col == df$GDP.per.capita){
+    p + xlim(5,12)
+  }
+  p
+} 
+```
+
+```{r echo=FALSE}
+# This function creates a box plot for the factors
+Univariate_Plots_box <- function(df,col,x_lab,y_lab,title,color){
+  p = ggplot(df, aes(x = "", y = col)) + 
+  geom_boxplot(fill=color) +
+  xlab(x_lab) +
+  ylab(y_lab) +
+  ggtitle(title)
+  
+  p
+} 
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Happiness Score
+summary(df['Score'])
+
+#Histogram
+Univariate_Plots_hist(df,df$Score,"Happiness Score","Frequency","Happiness Score distribution",0.1,'#ff7675')
+
+#Box Plot
+Univariate_Plots_box(df,df$Score,"Happiness Score","Frequency","Happiness Score distribution",'#ff7675')
+```
+
+The happiness score is normally distributed, The range of the data is between 2.6 and 7.9, The mean, median and mode are almost equal, Mean = 5.4 and the median = 5.3, Mode = 5. There are no outliers in the Score.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#GDP per capita
+summary(df['GDP.per.capita'])
+Univariate_Plots_hist(df,df$GDP.per.capita,"GDP per capita","Frequency","GDP per capita distribution",0.1,'#60a3bc')
+
+Univariate_Plots_box(df,df$GDP.per.capita,"GDP per capita","Frequency","GDP per capita distribution",'#60a3bc')
+```
+
+The distribution of GDP per capita is left-skewed,
+That mean the most of the data is a large number. The range of the data is between 6.3 and 11.8, the Mean = 9.2 and the median = 9.4, Mode = 10.8. There are no outliers in GDP per capita. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Social support
+summary(df['Social.support'])
+
+Univariate_Plots_hist(df,df$Social.support,"Social support","Frequency","Social support distribution",0.01,'#4a69bd')
+
+Univariate_Plots_box(df,df$Social.support,"Social support","Frequency","Social support distribution",'#4a69bd')
+
+```
+
+The distribution of Social support is also left-skewed, The range of the data is between 0.2 and 0.9, Most of the data is near 1. The Mean = 0.80 and the median = 0.83, Mode = 10.8. We can see from the box plot there are outliers between 0.3 and 0.5.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Healthy life expectancy at birth
+summary(df['Healthy.life.expectancy.at.birth'])
+
+Univariate_Plots_hist(df,df$Healthy.life.expectancy.at.birth,"Healthy life expectancy at birt","Frequency","Healthy life expectancy at birth distribution",1,'#58B19F')
+
+Univariate_Plots_box(df,df$Healthy.life.expectancy.at.birth,"Healthy life expectancy at birt","Frequency","Healthy life expectancy at birth distribution",'#58B19F')
+```
+
+The distribution of Healthy life expectancy at birth left-skewed, The range of the data is between 39.35 and 76.54, Most of the data is between 60 and 70. Which is mean the high number of countries have a good health score.The Mean = 62.48 and the median = 64.04, Mode = 65. We can see from the box plot there are outliers near 40.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Positive affect
+
+summary(df['Positive.affect'])
+
+Univariate_Plots_hist(df,df$Positive.affect,"Positive affect","Frequency","Positive affect distribution",0.01,'#f5cd79')
+
+Univariate_Plots_box(df,df$Positive.affect,"Positive affect","Frequency","Positive affect distribution",'#f5cd79')
+```
+
+The positive affect distribution is bimodal. This means that there is not a single data value that occurs with the highest frequency, it has 2 modes one at 0.64 and another at 0.85. The mean = 0.70 and the median = 0.71. The range in the data between 0.37 and 0.94.  This distribution is surprising me I thought it will be a left skewed. There are no outliers in the positive affect.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Negative affect
+summary(df['Negative.affect'])
+Univariate_Plots_hist(df,df$Negative.affect,"Negative affect","Frequency","Negative affect distribution",0.01,'#747d8c')
+
+Univariate_Plots_box(df,df$Negative.affect,"Negative affect","Frequency","Negative affect distribution",'#747d8c')
+
+```
+
+The negative affect is a right-skewed distribution. This distrepution meet my expectation because it makes seance the sadness, worry, and anger, affect in the happiness. The mean is equal to 0.26, the median is equal 0.25, and the mode is equal to 0.23. There are outliers above 0.48.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(df['Continent'])
+
+ggplot(df, aes(x=Continent,fill=Continent)) +geom_bar() + xlab("Continent") + ylab("Frequency") +ggtitle("Continent distribution")
+```
+
+From the distribution of the data based on the Continent is highest in Asia by 398 rows this comes from a large number of the country in Asia. Europe comes after by 349 rows, Africa with 320 rows, North America with 117 rows, South America 99 and Oceania with 18 rows only. This rows not depend on the number of the countryies in each continent there are multiple rows represent the data of each year.
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+The dataset contains 1301 observations of 9 features.
+
+### What is/are the main feature(s) of interest in your dataset?
+The mean feature is happiness score with the value between 0 and 10.
+
+### What other features in the dataset do you think will help support your \
+investigation into your feature(s) of interest?
+I mostly on comparing the factors based on the continents because I want to understand the behavior of happiness around the world.
+
+### Did you create any new variables from existing variables in the dataset?
+Yes, I created a new column named continent as the categorical variable. I created it from another dataset the match each country with the right continent.
+
+### Of the features you investigated, were there any unusual distributions? \
+Actually, I imagine the distribution before I see the charts. almost all factors except the positive affect meet my expectation. The positive affect has the bimodal distribution.
+
+### Did you perform any operations on the data to tidy, adjust, or change the form \
+of the data? If so, why did you do this?
+The first step in my project is cleaning the data to be ready to investigate.
+
+# Bivariate Plots Section
+In this section we will answer this questions :
+Q1) How is the performance of the world happiness score over the years?
+Q2) What are the factors affect the happiness Score?
+Q3) To what extend effect these factors on the happiness Score?
+
+#Q1) How is the performance of the world happiness score over the years?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Group_Year <- group_by(df, Year)
+
+df.factor_Year<- summarise(Group_Year, Score = mean(Score), n= n())
+
+plot2 <- ggplot(aes(x = Year, y =Score),
+  data = subset(df.factor_Year)) +
+  geom_line(linetype = "dashed",color="#ff7675") +
+  geom_point(color="#30336b") +
+  scale_x_discrete(limits = c(2008,2009,2010,2011,2012,2013,2014,2015,2016,2017)) +
+  ggtitle("The performance of the world happiness score over the years")
+
+plot2 
+```
+
+In general the happiness score has highest value at 2017 and lowest value at 2014. From 2008 to 2010 is increased by approximately 0.08 point. From 2010 to 2011 it rapidly dropped by almost 0.05 point. The possible reasons for that is the amount of the data so let us check about it. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+head(df.factor_Year,10)
+```
+
+- From the table, we can see the difference btween the number of rows 2010 and 2011 is equal to 24 rows. But this is one possible reason only, we  can't judge about this effect till we analyze in more depth. 
+- From 2012 to 2014 it rapidly dropped by almost 0.08 point. 
+- From 2016 to 2017 it rapidly increases by almost 0.14 points.
+
+#Q2) What are the factors affect the happiness Score?
+#Q3) To what extend effect these factors on the happiness Score?
+
+It's interesting when you using helpful packages in R. This packages helps you to reduce the code and give you good results. In this section, I use the correlation matrix to find the correlation coefficient value for all factor. Let's investigate the matrix together.
+
+```{r,echo=FALSE, Bivariate_Plots}
+c <-select(df, Score, GDP.per.capita, Social.support,Healthy.life.expectancy.at.birth
+       ,Positive.affect,Negative.affect)
+M<-cor(c)
+
+plot1<-ggcorrplot(M, type = "lower",lab = TRUE,colors = c("#6D9EC1", "white", "#58B19F")) +ggtitle("Correlation Coefficient Matrix of the Data")
+plot1
+```
+
+The table below discusses all strength matches based on correlation coefficient values : 
+I used shortcuts to simplify table
+
+|     -    | Score   | GDP     | Social  | Healthy | Positive | Negative |
+|----------|---------|---------|---------|---------|----------|----------|
+| Score    |    -    |         |         |         |          |          |
+| GDP      | +Strong |    -    |         |         |          |          |
+| Social   | +Strong | +Strong |    -    |         |          |          |
+| Healthy  | +Strong | +Strong | +Strong |    -    |          |          |
+| Positive | +Strong |  +Weak  |  +Weak  |  +Weak  |     -    |          |
+| Negative |  -Weak  |  -Weak  |  -Weak  |  -Weak  |   -Weak  |     -    |
+
+
+
+That's great we have a good overview let's see how's the scatter plot of happiness score and other factors look like.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# This function creates a scatter plot to study the relationship between happiness score and factors 
+Bivariate_Plots_point <- function(df,col1,col2,x_lab,y_lab,title,color){
+  p = ggplot(df, aes(x=col1, y=col2)) + 
+  geom_point(shape=1, color=color)+
+  geom_smooth(method=lm,  linetype="dashed",
+             color="darkred", fill="#eb3b5a") +
+    xlab(x_lab) + 
+    ylab(y_lab) +
+    ggtitle(title) 
+p
+  }
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Bivariate_Plots_point (df,df$Score,df$GDP.per.capita,"Happiness Score","GDP per capita","The relationship between GDP per capita and Happiness Score",'#60a3bc')
+```
+
+From the chart, we see the relationship between Score and GDP per cabita is strong positive.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Bivariate_Plots_point (df,df$Score,df$Social.support,"Happiness Score","Social support","The relationship between Social support and Happiness Score",'#4a69bd')
+```
+
+From the chart, we see the relationship between Score and Social support is strong positive.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Bivariate_Plots_point (df,df$Score,df$Healthy.life.expectancy.at.birth,"Happiness Score","Healthy life expectancy at birth","The relationship between Healthy life expectancy at birth and Happiness Score",'#58B19F')
+```
+
+From the chart, we see the relationship between Score and Healthy life expectancy at birth is strong positive.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Bivariate_Plots_point (df,df$Score,df$Positive.affect,"Happiness Score","Positive affect","The relationship between Positive affect and Happiness Score",'#cc8e35')
+```
+
+From the chart, we see the relationship between Score and Positive affect is strong positive but less than outhers.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Bivariate_Plots_point (df,df$Score,df$Negative.affect,"Happiness Score","Negative affect","The relationship between Negative affect and Happiness Score",'#747d8c')
+```
+
+From the chart, we see the relationship between Score and Negative affect is weak negative.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Continent_Score <- ggplot(df, aes(x=Continent, y=Score,color=Continent)) + 
+  geom_boxplot(outlier.colour="red", outlier.shape=8,
+                outlier.size=1) +scale_color_brewer(palette="Set1")+ggtitle("The relationship between Continents based on Happiness Score") +ylab("Happiness Score") +ylim(2.5,8)+ scale_y_discrete(limits = c(3,4,5,6,7,8)) 
+
+Continent_Score
+```
+
+I set y range from 0 to 10 to undestand hows continents look on the Score ladder.
+
+In general, Europ has the highest score and Africa has the lowest score. Asia has the largest range and Oceania has the lowest range. We should take into consideration the number of countries on each continent.
+
+Africa: 
+The range of score between 2.8 to 5.8, the distribution is almost normal, median equal 4.4, there are outliers above 6.
+
+Asia: 
+The score has a wide range between 3 and 7.5, the distribution of the box is right-skewed, median equal 5.1, there are outliers below 3.
+
+Europ:
+The score has a wide range between 3.9 and 8, the distribution of the box is right-skewed, median equal 6, there are no outliers.
+
+North America:
+The score has a wide range between 3.5 and 7.8, the distribution of the box is left-skewed, median equal 6.5, there are no outliers.
+
+South America:
+The score has ranged between 5 and 7.5, the distribution of the box is normal, median equal 6.4, there are outliers around 4.
+
+From this chart, we can't read Oceania so I create a new one zoom in it by decrease y limit
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Continent_Score+ylim(7,8)
+```
+
+Oceania: 
+The score has ranged between 7.15 and 7.48, the distribution of the box is normal, median equal 7.26, there are no outliers.
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. How did the feature(s) of interest vary with other features in \
+the dataset?
+
+The happiness score is correlated by other factors shown in the table :
+
+| Factor                           | Correlation coefficient | Relation strength | Relation direction |
+|----------------------------------|-------------------------|-------------------|--------------------|
+| GDP per capita                   |           0.77          |       Strong      |      Positive      |
+| Social support                   |           0.7           |       Strong      |      Positive      |
+| Healthy life expectancy at birth |           0.74          |       Strong      |      Positive      |
+| Positive affect                  |           0.55          |       Strong      |      Positive      |
+| Negative affect                  |          -0.26          |        Weak       |      Negative      |
+
+### Did you observe any interesting relationships between the other features \
+(not the main feature(s) of interest)?
+The interesting relationships between GDP per capita and Healthy of life expectancy at birth because in the correlation matrix it takes the highest correlation coefficient value with 0.85. GDP per capita
+is especially useful when comparing one country to another because it shows the relative performance of the countries. A rise in per capita GDP signals growth in the economy and tends to reflect an increase in productivity this increasing reflect on the quality of any service provided by the country to its citizen. The health is one of these important services.
+
+Read more: https://www.investopedia.com/terms/p/per-capita-gdp.asp
+
+### What was the strongest relationship you found?
+GDP per capita and Healthy of life expectancy at birth
+
+
+# Multivariate Plots Section
+In this section we will answer this questions :
+Q4) How is the performance of happiness score in world continents over the years?
+Q5) How's the distribution of the most factor effect on happiness score over the world continents?
+#Q4) How is the performance of happiness score in world continents over the year?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Group the data based on the Year and Continent
+Group_Continent_Y <- group_by(df, Year,Continent)
+
+df.factor_coninent_y<- summarise(Group_Continent_Y,
+                               Score = mean(Score),
+                               GDP = mean(GDP.per.capita),
+                               H_mean = mean(Healthy.life.expectancy.at.birth),
+                               p_mean = mean(Positive.affect),
+                               n_mean = mean(Negative.affect),
+                               n=n())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# The performance of happiness score in world continents over the years
+ggplot(aes(x = Year, y =Score),
+       data = subset(df.factor_coninent_y)) +
+       geom_line(aes(color = Continent)) + 
+       geom_point(color="#30336b") +
+       scale_x_discrete(limits = c(2008,2009,2010,2011,2012,2013,2014,2015,2016,2017)) +
+       ggtitle("The performance of happiness score in world continents over the year")+
+       ylab("Happiness Score")
+```
+
+Now we separate the general line to many lines represent the Continents. This will help us to understand the years that have drops. 
+
+1) Africa 
+The interesting interval is between 2010 to 2013 because this years have much event based on Arab Spring. The Arab Spring began in late 2010 in response to oppressive regimes and a low standard of living, beginning with protests in Tunisia.The effects of the Tunisian Revolution spread strongly to Libya and Egypt.Sustained street demonstrations took place in Morocco, ,Algeria, and Sudan.
+
+2) Asia
+Between 2011 and 2013 Asia also have a problems instad of Arab Spring but the affect here is minor compared with Afreica. almost all problems solved in the end of 2011 along with governmental changes in Saudi Arabia ,Bahran, Jordan, Oman, Kuwait, and Palestinian.
+
+3) Europe:
+The interesting interval is between 2008 and 2009 because the happiness score is decreasing by almost 1.2 points. I searched about this during the internet but I didn't find a specific event happened in this year. Maybe the data is not enough or something happened before and the affect has appeared later this depends on 2007 data.
+
+4) North America:
+At the blue line, we see the major effect comes from 2009 to 2011. When I searched about something interesting to understand the possible causes occurred there I find something but it's lead us to investigate more about it ( did the financial crisis of 2007–2008 affect on the world happiness score  as a long-term effect? ) maybe a consider it as a question in future work.
+
+5) South America:
+The score is increased from 2008 and 2009 by 0.8, then it stays to 2013 then drop again in 2016. I didn't find any interesting information but we should remember based on the missing data in the original dataset that we removed it may be they affect.
+
+6) Oceania: 
+The line here has tiny changes.This is the smallest continent based on the area and the number of countries. The mean of the score is absolutely affected by this number. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Group_Continent <- group_by(df, Continent)
+
+df.factor_coninent<- summarise(Group_Continent,
+                               Score = mean(Score),
+                               GDP = mean(GDP.per.capita),
+                               S_s = mean(Social.support),
+                               H_mean = mean(Healthy.life.expectancy.at.birth),
+                               P_mean = mean(Positive.affect),
+                               N_mean = mean(Negative.affect),
+                               n=n())
+```
+
+#Q5) How's the distribution of the most factor effect on happiness score over the world continents?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = GDP.per.capita, y =Score),
+       data = subset(Group_Continent)) +
+       geom_point(aes(color = Continent)) + 
+       geom_smooth(method=lm,linetype="dashed",
+             color="darkred",fill="#eb3b5a")+
+       facet_wrap(~Continent) +
+       ggtitle("The affect of GDP per capita on the happiness Score in world continents")+
+       ylim(4,8)+xlim(6,12)
+```
+
+In General, the GDP per capita has a strong positive relation with happiness score.
+
+Africa :
+The GDP per capita range is between 6 to 10, The relation is strong positive with happiness score, There is an outlier above 6. 
+
+Asia :
+The GDP per capita range is between 7 to 12, The relation is strong positive with happiness score. There is an outlier near 6. 
+
+Europe :
+The GDP per capita range is between 8.2 to 11.2, The relation is strong positive with happiness score.  There is an outlier near between 5.5 and 6. 
+
+North America :
+The GDP per capita range is between 6.5 to 11, The relation is strong positive with happiness score.
+
+Oceania:
+I expected this chart. the range is tiny but has a high value between 10 and 1.
+
+South America:
+The GDP per capita range is between 8 to 10, The relation is strong positive with happiness score. there is an outlier at 4.
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. Were there features that strengthened each other in terms of \
+looking at your feature(s) of interest?
+
+First, I looked at the trend of the happiness score in the world continents over the years. I found some interesting interval in Africa and Asia between 2010 to 2013.
+Then, I decided to choose GDP per capita because it has the strongest correlation with happiness score compared with other factors. So I want to understand the distribution of this relation in each continent.
+
+### Were there any interesting or surprising interactions between features?
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+plot1
+```
+
+### Description One
+I chose this chart because it gives us a full coverage of the relations among over data. This function covers the strength and the directions of this relationships. 
+
+In this chart, the strength and the direction of all relationships factors in our dataset. The matrix represents the strongest positive relation between GDP per capita and health of Healthy life expectancy at birth. The weakness positive relation between Positive affect with GDP per capita and health of Healthy life expectancy at birth. The strongest negative relationship between Negative affect from one side and Social support and Positive affect from another side. The weakness negative relation between Negative affect and Healthy life expectancy at birth.
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+plot2
+```
+
+### Description Two
+I chose this chart because it's a good starting point in your analysis to investigate the main factor over the years.
+
+In general, the happiness score has the highest value at 2017 and lowest value at 2014. From 2008 to 2010 is increased by approximately 0.08 point. From 2010 to 2011 it rapidly dropped by almost 0.05 point. The possible reasons for that are the amount of the data so let us check about it. 
+
+### Plot Three
+```{r echo=FALSE, Plot_Three, message=FALSE, warning=FALSE}
+Continent_Score
+```
+
+### Description Three
+The continent is the column that I created in my dataset. IS created it because I want to study happiness over the world. I thought it's better when I grouping my data instead of study the full list of countries. So I choose this chart because it describes the distribution of the main factor in each group.
+
+In general, Europ has the highest score and Africa has the lowest score. Asia has the largest range and Oceania has the lowest range. We should take into consideration the number of countries on each continent.
+
+------
+
+# Reflection
+From this exploratory analysis, we observed the relationships between all factors and our main factor happiness score. In this project a learned a lot of things which gives me more confidence that I'm in the right way of learning data analysis.
+
+I faced many Struggle with this data set. First, I was confused and don't have any idea about some variables. Second, the data was not ready to analyze, so I spent more time to clean it. Third, when I looked to the data I decided to add a new category "Continent" but it takes a time when I try to find another data and merged with my data. Finally, the knitr report didn't save from the first time and many errors occur. 
+
+Project successes even after the above-mentioned struggle because of the World Happiness Report 2018 have a lot of informations and analysis this helps me to take an inspiration to finish my project. The cleaning step was completed with good enough data. The correlation coefficient of the variables calculated easily.
+
+I think the best way in the future work is to think about personal factors. For example, what is the difference between male and female? is the age reflect on happiness? what about the education level? or the amount of reserve money for each person?
+
+#Reference
+https://dictionary.cambridge.org/dictionary/english/gdp-per-capita
+http://www.who.int/healthinfo/statistics/indhale/en/
+http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
+http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+http://www.sthda.com/english/articles/32-r-graphics-essentials/128-plot-time-series-data-using-ggplot/
+http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+
+
+#Helpful tool 
+Online RStudio https://labs.cognitiveclass.ai/
+Markdown table generator https://www.tablesgenerator.com/markdown_tables#
+
