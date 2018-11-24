@@ -24,6 +24,17 @@ Continent |String| Continent of Country.
     Q4) How is the performance of happiness score in world continents over the years?
     Q5) How’s the distribution of the most factor effect on happiness score over the world continents?
 
+### File Descriptions
+    ./DataSet.xls is the original dataset
+    ./cleaned_data.csv is the cleaned dataset
+    ./data_cleaning.ipynb is a Jupyter notebook containing the cleaning process
+    ./Project.Rmd R version of analysis
+    ./Report.pdf the PDF version of the analysis
+    
+
+
+## Dataset
+http://worldhappiness.report/ed/2018/
 
 ## Helpful links
 http://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2 
