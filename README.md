@@ -48,3 +48,6 @@ http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-m
 http://www.sthda.com/english/articles/32-r-graphics-essentials/128-plot-time-series-data-using-ggplot/ 
 
 http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+
+
+#### All images designed using  [Canva](http://https://www.canva.com) 
